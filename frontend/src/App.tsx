@@ -4,7 +4,8 @@ import { Note as NoteModel } from './models/note';
 import Note from './components/Note';
 
 function App() {
-  const [notes, setNotes] = useState<NoteModel[]>([])
+  const [notes, setNotes] = useState<NoteModel[]>([]);
+
   useEffect(() => {
     async function loadNotes() {
       try {
@@ -19,10 +20,17 @@ function App() {
     loadNotes();
   }, []);
   return (
-    <div>
-      {notes.map((note) => (<Note note={note} key={note._id} />)
-      )}
+
+    <div className="mx-auto container py-20 px-6">
+      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+        {notes.map((note) => (<Note note={note} key={note._id} />)
+        )}
+      </div>
     </div>
+
+
+
+
   );
 }
 
