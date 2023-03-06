@@ -23,8 +23,6 @@ const AddNoteDialog = ({ onNoteSaved }: AddNoteDialogProps) => {
         } catch (error) {
             console.error(error);
             alert(error)
-
-
         }
     };
     return (<>
