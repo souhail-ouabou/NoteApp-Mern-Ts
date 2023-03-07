@@ -6,10 +6,11 @@ import { FaTrash } from "react-icons/fa"
 
 interface NoteProps {
   note: NoteModel,
+  onNoteClicked: (note: NoteModel) => void,
   onDeleteClicked: (note: NoteModel) => void
 }
 
-const Note = ({ note, onDeleteClicked }: NoteProps) => {
+const Note = ({ note, onNoteClicked, onDeleteClicked }: NoteProps) => {
   const {
     title,
     text,
@@ -25,17 +26,17 @@ const Note = ({ note, onDeleteClicked }: NoteProps) => {
   }
 
   return (
-    <div className="w-full h-52 flex flex-col justify-between dark:bg-gray-800 bg-white dark:border-gray-700 rounded-lg border border-gray-400 mb-6 py-5 px-4">
+    <div onClick={() => onNoteClicked(note)} className="w-full h-52 flex flex-col justify-between dark:bg-gray-800 bg-white dark:border-gray-700 rounded-lg border border-gray-400 mb-6 py-5 px-4">
       <div>
         <h4 className="flex items-center text-gray-800 dark:text-gray-100 font-bold mb-3">
           {title}
           <div className='bg-red-600 rounded-tr-md  rounded-bl-xl w-10 h-10  flex ml-auto'>
-            <FaTrash className="m-auto text-white justify-center items-center" 
-            onClick={(e) => {
-              onDeleteClicked(note);
-              e.stopPropagation();
-            }}
-          />
+            <FaTrash className="m-auto text-white justify-center items-center"
+              onClick={(e) => {
+                onDeleteClicked(note);
+                e.stopPropagation();
+              }}
+            />
           </div>
         </h4>
         <p className="text-gray-800 dark:text-gray-100 text-sm">{text}</p>
