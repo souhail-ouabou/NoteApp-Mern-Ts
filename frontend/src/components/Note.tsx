@@ -26,7 +26,7 @@ const Note = ({ note, onNoteClicked, onDeleteClicked }: NoteProps) => {
   }
 
   return (
-    <div onClick={() => onNoteClicked(note)} className="w-full h-52 flex flex-col justify-between dark:bg-gray-800 bg-white dark:border-gray-700 rounded-lg border border-gray-400 mb-6 py-5 px-4">
+    <div onClick={() => onNoteClicked(note)} className="w-full h-52 flex flex-col justify-between dark:bg-gray-800 bg-white dark:border-gray-700 rounded-lg border border-gray-400 mb-2 py-5 px-4">
       <div>
         <h4 className="flex items-center text-gray-800 dark:text-gray-100 font-bold mb-3">
           {title}

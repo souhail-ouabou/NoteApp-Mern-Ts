@@ -7,16 +7,25 @@ import { FaPlusCircle } from "react-icons/fa";
 
 function App() {
   const [notes, setNotes] = useState<NoteModel[]>([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [showNotesLoadingError, setShowNotesLoadingError] = useState(false);
+
+
   const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
   const [showEditNoteDialog, setShowEditNoteDialog] = useState(false);
   useEffect(() => {
     async function loadNotes() {
       try {
+        setShowNotesLoadingError(false);
+        setNotesLoading(true);
         const notes = await NotesApi.fetchNotes();
         setNotes(notes);
       } catch (error) {
         console.error(error);
-        alert(error);
+        setShowNotesLoadingError(true);
+      }
+      finally {
+        setNotesLoading(false);
       }
     }
     loadNotes();
@@ -30,6 +39,17 @@ function App() {
       alert(error)
     }
   }
+  const notesGrid = <div className="mx-auto container py-2 px-6">
+    <div className="grid sm:gap-6 gap-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 ">
+      {notes.map((note) => (
+        <Note
+          note={note}
+          key={note._id}
+          onNoteClicked={setNoteToEdit} // or   onNoteClicked={(note) => setNoteToEdit(note)}
+          onDeleteClicked={deleteNote} />)
+      )}
+    </div>
+  </div>
   return (
     <>
       <div className="flex items-center justify-center h-28">
@@ -50,18 +70,25 @@ function App() {
             setShowEditNoteDialog(false)
           }} />
       }
-
-      <div className="mx-auto container py-2 px-6">
-        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-          {notes.map((note) => (
-            <Note
-              note={note}
-              key={note._id}
-              onNoteClicked={setNoteToEdit} // or   onNoteClicked={(note) => setNoteToEdit(note)}
-              onDeleteClicked={deleteNote} />)
-          )}
+      {notesLoading &&
+        <div className="mx-auto container py-2 px-6  animate-pulse">
+          <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+          <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+          <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+          <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+          <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+          <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+          <span className="sr-only">Loading...</span>
         </div>
-      </div>
+      }
+      {showNotesLoadingError && <p>Something went wrong. Please refresh the page</p>}
+      {!notesLoading && !showNotesLoadingError &&
+        <>
+          {notes.length > 0
+            ? notesGrid : <p>You don't have any notes yet</p>
+          }
+        </>
+      }
       {noteToEdit &&
         <AddEditNoteDialog
           onDismiss={() => setNoteToEdit(null)}
