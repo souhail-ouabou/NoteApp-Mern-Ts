@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { NoteInput } from "../network/notes_api";
 import * as NotesApi from "../network/notes_api";
 import { Note } from "../models/note";
-import { FaPlusCircle } from "react-icons/fa";
+import TextInputField from "./form/TextInputField";
 
 interface AddEditNoteDialogProps {
     noteToEdit?: Note,
@@ -39,7 +38,6 @@ const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: Ad
         }
     };
     return (<>
-
         {showModal ? (
             <>
                 <div className="fixed inset-0 z-10 overflow-y-auto ">
@@ -53,6 +51,25 @@ const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: Ad
                                 <div className="px-6 py-6 lg:px-8">
                                     <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white"> {noteToEdit ? "Edit note " : "Add note"}</h3>
                                     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                                        <TextInputField
+                                            name="title"
+                                            label="Title"
+                                            type="text"
+                                            placeholder="Title"
+                                            register={register}
+                                            registerOptions={{ required: "Required" }}
+                                            error={errors.title}
+                                        />
+
+                                        <TextInputField
+                                            name="text"
+                                            label="Text"
+                                            as="textarea"
+                                            rows={5}
+                                            placeholder="Text"
+                                            register={register}
+                                        />
+
                                         <div>
                                             <label htmlFor="title" className="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Title</label>
                                             {errors.title && (<>
@@ -92,5 +109,4 @@ const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: Ad
         }
     </>);
 }
-
 export default AddEditNoteDialog;
