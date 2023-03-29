@@ -1,42 +1,33 @@
+import { useState } from 'react';
 import { useForm } from "react-hook-form";
-import { NoteInput } from "../network/notes_api";
+import { User } from "../models/user";
 import * as NotesApi from "../network/notes_api";
-import { Note } from "../models/note";
+import { SignUpCredentials } from "../network/notes_api";
 import TextInputField from "./form/TextInputField";
 
-interface AddEditNoteDialogProps {
-    noteToEdit?: Note,
-    showModal: boolean,
+interface SignUpModalProps {
     onDismiss: () => void,
-    onNoteSaved: (note: Note) => void
+    onSignUpSuccessful: (user: User) => void,
+    showModal: boolean,
 }
-const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: AddEditNoteDialogProps) => {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting }
-    } = useForm<NoteInput>({
-        defaultValues: {
-            title: noteToEdit?.title || "",
-            text: noteToEdit?.text || ""
-        }
-    });
-    async function onSubmit(input: NoteInput) {
+
+const SignUpModal = ({ onDismiss, onSignUpSuccessful, showModal }: SignUpModalProps) => {
+
+    const [errorText, setErrorText] = useState<string | null>(null);
+
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignUpCredentials>();
+
+    async function onSubmit(credentials: SignUpCredentials) {
+        console.log(credentials);
         try {
-            let noteResponse: Note;
-            if (noteToEdit) {
-                noteResponse = await NotesApi.updateNote(noteToEdit._id, input);
-            }
-            else {
-                noteResponse = await NotesApi.createNote(input)
-            }
-            onNoteSaved(noteResponse)
-            onDismiss()
+            const newUser = await NotesApi.signUp(credentials);
+            onSignUpSuccessful(newUser);
         } catch (error) {
+            alert(error);
             console.error(error);
-            alert(error)
         }
-    };
+    }
+
     return (<>
         {showModal ? (
             <>
@@ -49,32 +40,40 @@ const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: Ad
                                     <span className="sr-only">Close modal</span>
                                 </button>
                                 <div className="px-6 py-6 lg:px-8">
-                                    <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white"> {noteToEdit ? "Edit note " : "Add note"}</h3>
+                                    <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">Sign Up</h3>
                                     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                                         <TextInputField
-                                            name="title"
-                                            label="Title"
+                                            name="username"
+                                            label="Username"
                                             type="text"
-                                            placeholder="Title"
+                                            placeholder="Username"
                                             register={register}
                                             registerOptions={{ required: "Required" }}
-                                            error={errors.title}
+                                            error={errors.username}
                                         />
-
                                         <TextInputField
-                                            name="text"
-                                            label="Text"
-                                            area={true}
-                                            rows={5}
-                                            placeholder="Text"
+                                            name="email"
+                                            label="Email"
+                                            type="email"
+                                            placeholder="Email"
                                             register={register}
+                                            registerOptions={{ required: "Required" }}
+                                            error={errors.email}
                                         />
-
+                                        <TextInputField
+                                            name="password"
+                                            label="Password"
+                                            type="password"
+                                            placeholder="Password"
+                                            register={register}
+                                            registerOptions={{ required: "Required" }}
+                                            error={errors.password}
+                                        />
                                         <div className="flex">
-                                            <button className="ml-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                            <button className="ml-auto w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                                 type="submit"
                                                 disabled={isSubmitting}>
-                                                Save
+                                                Sign Up
                                             </button>
                                         </div>
                                     </form>
@@ -83,10 +82,8 @@ const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: Ad
                         </div>
                     </div>
                 </div>
-
-            </>
-        ) : null
+            </>) : null
         }
     </>);
 }
-export default AddEditNoteDialog;
+export default SignUpModal;
