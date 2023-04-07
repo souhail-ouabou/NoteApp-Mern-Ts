@@ -34,9 +34,9 @@ function App() {
         onLogoutSuccessful={() => setLoggedInUser(null)}
       />
 
-      <>
-        {loggedInUser ? <NotesPagesLoggedInView /> : <NotesPageLoggedOutView />}
-      </>
+
+      {loggedInUser ? <NotesPagesLoggedInView /> : <NotesPageLoggedOutView onSignUpClicked={() => setShowSignupModal(true)}  />}
+
       {showSignUpModal &&
         <SignUpModal
           onDismiss={() => setShowSignupModal(false)}
