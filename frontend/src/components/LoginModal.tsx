@@ -1,9 +1,12 @@
-import React from 'react'
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { User } from '../models/user'
+import { User } from '../models/user';
 import * as NotesApi from "../network/notes_api";
 import { LoginCredentials } from "../network/notes_api";
 import TextInputField from './form/TextInputField';
+import { UnauthorizedError } from '../errors/http_errors';
+import { Alert } from 'flowbite-react';
+import { HiInformationCircle } from 'react-icons/hi';
 
 interface LoginModalProps {
     onDismiss: () => void,
@@ -12,15 +15,18 @@ interface LoginModalProps {
 }
 
 function LoginModal({ onLoginSuccessful, onDismiss }: LoginModalProps) {
-
+    const [errorText, setErrorText] = useState<string | null>(null);
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginCredentials>();
     async function onSubmit(credentials: LoginCredentials) {
-
         try {
             const user = await NotesApi.login(credentials);
             onLoginSuccessful(user);
         } catch (error) {
-            alert(error);
+            if (error instanceof UnauthorizedError) {
+                setErrorText(error.message);
+            } else {
+                alert(error);
+            }
             console.error(error);
         }
     }
@@ -37,6 +43,17 @@ function LoginModal({ onLoginSuccessful, onDismiss }: LoginModalProps) {
                             </button>
                             <div className="px-6 py-6 lg:px-8">
                                 <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">Log in</h3>
+                                {errorText && <Alert
+                                    color="failure"
+                                    icon={HiInformationCircle}
+                                >
+                                    <span>
+                                        <span className="font-medium">
+                                            Info alert!
+                                        </span>
+                                       {' '} {errorText}
+                                    </span>
+                                </Alert>}
                                 <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                                     <TextInputField
                                         name="username"
@@ -73,5 +90,4 @@ function LoginModal({ onLoginSuccessful, onDismiss }: LoginModalProps) {
 
     );
 }
-
 export default LoginModal

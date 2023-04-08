@@ -2,6 +2,7 @@ import { Navbar } from "flowbite-react/lib/esm/components";
 import { User } from "../models/user";
 import NavBarLoggedInView from "./NavBarLoggedInView";
 import NavBarLoggedOutView from "./NavBarLoggedOutView";
+import { Link } from "react-router-dom";
 
 
 interface NavBarProps {
@@ -18,7 +19,7 @@ const NavBar = ({ loggedInUser, onSignUpClicked, onLoginClicked, onLogoutSuccess
         rounded={true}
         className="bg-white px-2 sm:px-4 py-2.5 dark:bg-gray-900 fixed w-full z-20 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
 
-        <Navbar.Brand href="/">
+        <Navbar.Brand as={Link} to="/">
             <img
                 src="https://i.pinimg.com/originals/b6/cd/e8/b6cde81d1c489b0e20d85a6e06c5f8f9.png"
                 className="mr-1 h-6 sm:h-9"
@@ -38,22 +39,16 @@ const NavBar = ({ loggedInUser, onSignUpClicked, onLoginClicked, onLogoutSuccess
         </div>
         <Navbar.Collapse>
             <Navbar.Link
-                href="/navbars"
+                as={Link} to="/"
                 active={true}
             >
                 Home
             </Navbar.Link>
-            <Navbar.Link href="/navbars">
-                About
+            <Navbar.Link as={Link} to="/privacy">
+                Privacy
             </Navbar.Link>
-            <Navbar.Link href="/navbars">
-                Services
-            </Navbar.Link>
-            <Navbar.Link href="/navbars">
-                Pricing
-            </Navbar.Link>
-            <Navbar.Link href="/navbars">
-                Contact
+            <Navbar.Link as={Link} to="https://github.com/souhail-ouabou/NoteApp-Mern-Ts">
+                Repo
             </Navbar.Link>
         </Navbar.Collapse>
     </Navbar>

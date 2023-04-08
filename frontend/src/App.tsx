@@ -1,11 +1,13 @@
+import { useEffect, useState } from 'react';
 import LoginModal from './components/LoginModal';
 import NavBar from './components/NavBar';
 import SignUpModal from './components/SignUpModal';
-import { useEffect, useState } from 'react';
 import { User } from './models/user';
-import * as NotesApi from "./network/notes_api"
-import NotesPageLoggedOutView from './components/NotesPageLoggedOutView';
-import NotesPagesLoggedInView from './components/NotesPageLoggedInView';
+import * as NotesApi from "./network/notes_api";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import NotesPage from './pages/NotesPage';
+import PrivacyPage from './pages/PrivacyPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null)
@@ -26,17 +28,20 @@ function App() {
 
 
   return (
-    <>
+    <BrowserRouter>
       <NavBar
         loggedInUser={loggedInUser}
         onLoginClicked={() => setShowLoginModal(true)}
         onSignUpClicked={() => setShowSignupModal(true)}
         onLogoutSuccessful={() => setLoggedInUser(null)}
       />
-
-
-      {loggedInUser ? <NotesPagesLoggedInView /> : <NotesPageLoggedOutView onSignUpClicked={() => setShowSignupModal(true)}  />}
-
+      <>
+        <Routes>
+          <Route path='/' element={<NotesPage loggedInUser={loggedInUser} onSignUpClicked={() => setShowSignupModal(true)} />} />
+          <Route path='/privacy' element={<PrivacyPage />} />
+          <Route path='/*' element={<NotFoundPage />} />
+        </Routes>
+      </>
       {showSignUpModal &&
         <SignUpModal
           onDismiss={() => setShowSignupModal(false)}
@@ -56,7 +61,7 @@ function App() {
           }}
         />
       }
-    </>
+    </BrowserRouter>
   );
 }
 

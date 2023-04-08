@@ -4,6 +4,9 @@ import { User } from "../models/user";
 import * as NotesApi from "../network/notes_api";
 import { SignUpCredentials } from "../network/notes_api";
 import TextInputField from "./form/TextInputField";
+import { ConflictError } from '../errors/http_errors';
+import { Alert } from 'flowbite-react';
+import { HiInformationCircle } from 'react-icons/hi';
 
 interface SignUpModalProps {
     onDismiss: () => void,
@@ -23,7 +26,11 @@ const SignUpModal = ({ onDismiss, onSignUpSuccessful, showModal }: SignUpModalPr
             const newUser = await NotesApi.signUp(credentials);
             onSignUpSuccessful(newUser);
         } catch (error) {
-            alert(error);
+            if (error instanceof ConflictError) {
+                setErrorText(error.message);
+            } else {
+                alert(error);
+            }
             console.error(error);
         }
     }
@@ -41,6 +48,17 @@ const SignUpModal = ({ onDismiss, onSignUpSuccessful, showModal }: SignUpModalPr
                                 </button>
                                 <div className="px-6 py-6 lg:px-8">
                                     <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">Sign Up</h3>
+                                    {errorText && <Alert
+                                        color="failure"
+                                        icon={HiInformationCircle}
+                                    >
+                                        <span>
+                                            <span className="font-medium">
+                                                Info alert!
+                                            </span>
+                                            {' '} {errorText}
+                                        </span>
+                                    </Alert>}
                                     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                                         <TextInputField
                                             name="username"
