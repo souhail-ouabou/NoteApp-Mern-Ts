@@ -4,8 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { Note as NoteModel } from '../models/note';
 import Note from "./Note";
 import * as NotesApi from "../network/notes_api"
+import { fetchNotes } from "../features/note/noteSlice";
+import { useAppDispatch, useAppSelector } from "../utils/hooks";
+import { RootState } from "../store";
 
 const NotesPagesLoggedInView = () => {
+    const dispatch = useAppDispatch();
+    const selectedNotes = useAppSelector((state: RootState) => state.noteReducer)
     const [notes, setNotes] = useState<NoteModel[]>([]);
     const [notesLoading, setNotesLoading] = useState(false);
     const [showNotesLoadingError, setShowNotesLoadingError] = useState(false);
@@ -14,23 +19,21 @@ const NotesPagesLoggedInView = () => {
     const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
     const [showEditNoteDialog, setShowEditNoteDialog] = useState(false);
 
+    // const selectedNotes = useAppSelector(noteSelector);
+
     useEffect(() => {
-        async function loadNotes() {
-            try {
-                setShowNotesLoadingError(false);
-                setNotesLoading(true);
-                const notes = await NotesApi.fetchNotes();
-                setNotes(notes);
-            } catch (error) {
-                console.error(error);
-                setShowNotesLoadingError(true);
-            }
-            finally {
-                setNotesLoading(false);
-            }
+        const handleFetchNotes = () => {
+            dispatch(fetchNotes());
         }
-        loadNotes();
+        handleFetchNotes()
     }, []);
+    
+    useEffect(() => {
+        setNotesLoading(selectedNotes.loading);
+        setNotes(selectedNotes.notes);
+    }, [selectedNotes.loading, selectedNotes.notes])
+
+
     async function deleteNote(note: NoteModel) {
         try {
             await NotesApi.deleteNote(note._id);

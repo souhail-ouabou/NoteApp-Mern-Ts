@@ -3,6 +3,11 @@ import { NoteInput } from "../network/notes_api";
 import * as NotesApi from "../network/notes_api";
 import { Note } from "../models/note";
 import TextInputField from "./form/TextInputField";
+import { useDispatch } from "react-redux";
+import { useNavigate } from 'react-router-dom'
+import { AppDispatch, RootState } from "../store";
+import { createNote } from "../features/note/noteSlice";
+import { useAppDispatch, useAppSelector } from "../utils/hooks";
 
 interface AddEditNoteDialogProps {
     noteToEdit?: Note,
@@ -11,6 +16,9 @@ interface AddEditNoteDialogProps {
     onNoteSaved: (note: Note) => void
 }
 const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: AddEditNoteDialogProps) => {
+    const navigate = useNavigate()
+    const dispatch = useAppDispatch();
+    const selectedNotes = useAppSelector((state: RootState) => state.noteReducer)
     const {
         register,
         handleSubmit,
@@ -28,9 +36,16 @@ const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: Ad
                 noteResponse = await NotesApi.updateNote(noteToEdit._id, input);
             }
             else {
-                noteResponse = await NotesApi.createNote(input)
+                // noteResponse = await NotesApi.createNote(input)
+                console.log(input);
+                const resultAction = await dispatch(createNote(input))
+                if (createNote.fulfilled.match(resultAction)) {
+                    // Access the payload from the fulfilled action
+                    noteResponse = resultAction.payload;
+                    onNoteSaved(noteResponse)
+                }
             }
-            onNoteSaved(noteResponse)
+
             onDismiss()
         } catch (error) {
             console.error(error);

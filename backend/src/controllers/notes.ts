@@ -44,6 +44,7 @@ interface CreateNoteBody {
     text?: string
 }
 export const createNote: RequestHandler<unknown, unknown, CreateNoteBody, unknown> = async (req, res, next) => {
+    // console.log(req);
     const { title, text } = req.body
     const authenticatedUserId = req.session.userId;
 
