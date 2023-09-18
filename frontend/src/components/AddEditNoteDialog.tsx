@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { AppDispatch, RootState } from "../store";
 import { createNote } from "../features/note/noteSlice";
 import { useAppDispatch, useAppSelector } from "../utils/hooks";
+import { useNotesQuery, useSaveNoteMutation } from "../services/notesApi";
 
 interface AddEditNoteDialogProps {
     noteToEdit?: Note,
@@ -16,9 +17,11 @@ interface AddEditNoteDialogProps {
     onNoteSaved: (note: Note) => void
 }
 const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: AddEditNoteDialogProps) => {
-    const navigate = useNavigate()
-    const dispatch = useAppDispatch();
-    const selectedNotes = useAppSelector((state: RootState) => state.noteReducer)
+    const { refetch } = useNotesQuery();
+    // const navigate = useNavigate()
+    // const dispatch = useAppDispatch();
+    // const selectedNotes = useAppSelector((state: RootState) => state.noteReducer)
+    const [saveNote] = useSaveNoteMutation()
     const {
         register,
         handleSubmit,
@@ -37,13 +40,8 @@ const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: Ad
             }
             else {
                 // noteResponse = await NotesApi.createNote(input)
-                console.log(input);
-                const resultAction = await dispatch(createNote(input))
-                if (createNote.fulfilled.match(resultAction)) {
-                    // Access the payload from the fulfilled action
-                    noteResponse = resultAction.payload;
-                    onNoteSaved(noteResponse)
-                }
+                await saveNote(input)
+                refetch()
             }
 
             onDismiss()

@@ -30,7 +30,7 @@ export const getNote: RequestHandler = async (req, res, next) => {
             throw createHttpError(400, 'Note Not found')
         }
         if (!note.userId.equals(authenticatedUserId)) {
-            throw createHttpError(400, 'You cannot acces this note ')
+            throw createHttpError(400, 'You cannot access this note ')
         }
         res.status(200).json(note)
     } catch (error) {

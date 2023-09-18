@@ -4,13 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { Note as NoteModel } from '../models/note';
 import Note from "./Note";
 import * as NotesApi from "../network/notes_api"
-import { fetchNotes } from "../features/note/noteSlice";
-import { useAppDispatch, useAppSelector } from "../utils/hooks";
-import { RootState } from "../store";
+
+import { useNoteQuery, useNotesQuery } from "../services/notesApi";
 
 const NotesPagesLoggedInView = () => {
-    const dispatch = useAppDispatch();
-    const selectedNotes = useAppSelector((state: RootState) => state.noteReducer)
+    const { data, error, isLoading, isFetching, isSuccess } = useNotesQuery()
+    const { data: dataNote, } = useNoteQuery("643059c37e50b2020256b26b")
+
+    console.log("test data" + dataNote);
+
     const [notes, setNotes] = useState<NoteModel[]>([]);
     const [notesLoading, setNotesLoading] = useState(false);
     const [showNotesLoadingError, setShowNotesLoadingError] = useState(false);
@@ -19,19 +21,18 @@ const NotesPagesLoggedInView = () => {
     const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
     const [showEditNoteDialog, setShowEditNoteDialog] = useState(false);
 
-    // const selectedNotes = useAppSelector(noteSelector);
 
-    useEffect(() => {
-        const handleFetchNotes = () => {
-            dispatch(fetchNotes());
-        }
-        handleFetchNotes()
-    }, []);
-    
-    useEffect(() => {
-        setNotesLoading(selectedNotes.loading);
-        setNotes(selectedNotes.notes);
-    }, [selectedNotes.loading, selectedNotes.notes])
+    const notesGrid = <div className="mx-auto container py-2 px-6">
+        <div className="grid sm:gap-6 gap-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 ">
+            {data?.map((note) => (
+                <Note
+                    note={note}
+                    key={note._id}
+                    onNoteClicked={setNoteToEdit} // or   onNoteClicked={(note) => setNoteToEdit(note)}
+                    onDeleteClicked={deleteNote} />)
+            )}
+        </div>
+    </div>
 
 
     async function deleteNote(note: NoteModel) {
@@ -43,17 +44,6 @@ const NotesPagesLoggedInView = () => {
             alert(error)
         }
     }
-    const notesGrid = <div className="mx-auto container py-2 px-6">
-        <div className="grid sm:gap-6 gap-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 ">
-            {notes.map((note) => (
-                <Note
-                    note={note}
-                    key={note._id}
-                    onNoteClicked={setNoteToEdit} // or   onNoteClicked={(note) => setNoteToEdit(note)}
-                    onDeleteClicked={deleteNote} />)
-            )}
-        </div>
-    </div>
     return (
 
         <>
@@ -71,11 +61,11 @@ const NotesPagesLoggedInView = () => {
                 <AddEditNoteDialog
                     onDismiss={() => setShowEditNoteDialog(false)}
                     showModal={true} onNoteSaved={(newNote) => {
-                        setNotes([...notes, newNote])
+                        // setNotes([...notes, newNote])
                         setShowEditNoteDialog(false)
                     }} />
             }
-            {notesLoading &&
+            {isLoading &&
                 <div className="mx-auto container py-2 px-6  animate-pulse">
                     <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
                     <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
@@ -86,10 +76,21 @@ const NotesPagesLoggedInView = () => {
                     <span className="sr-only">Loading...</span>
                 </div>
             }
-            {showNotesLoadingError && <p>Something went wrong. Please refresh the page</p>}
-            {!notesLoading && !showNotesLoadingError &&
+            {isFetching &&
+                <div className="mx-auto container py-2 px-6  animate-pulse">
+                    <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                    <span className="sr-only">Fetching...</span>
+                </div>
+            }
+            {error && <p>Something went wrong. Please refresh the page</p>}
+            {isSuccess &&
                 <>
-                    {notes.length > 0
+                    {data.length > 0
                         ? notesGrid : <p>You don't have any notes yet</p>
                     }
                 </>
@@ -100,7 +101,7 @@ const NotesPagesLoggedInView = () => {
                     showModal={true}
                     noteToEdit={noteToEdit}
                     onNoteSaved={(updatedNote) => {
-                        setNotes(notes.map(existingNote => existingNote._id === updatedNote._id ? updatedNote : existingNote))
+                        // setNotes(notes.map(existingNote => existingNote._id === updatedNote._id ? updatedNote : existingNote))
                         setNoteToEdit(null);
                     }} />
             }
