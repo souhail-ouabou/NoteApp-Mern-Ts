@@ -1,8 +1,7 @@
-import styles from "../styles/Note.module.css";
 
+import { FaTrash } from "react-icons/fa";
 import { Note as NoteModel } from "../models/note";
 import { formatDate } from "../utils/formatDate";
-import { FaTrash } from "react-icons/fa"
 
 interface NoteProps {
   note: NoteModel,
@@ -31,7 +30,7 @@ const Note = ({ note, onNoteClicked, onDeleteClicked }: NoteProps) => {
         <h4 className="flex items-center text-gray-800 dark:text-gray-100 font-bold mb-3">
           {title}
           <div className='bg-red-600 rounded-tr-md  rounded-bl-xl w-10 h-10  flex ml-auto'>
-            <FaTrash className="m-auto text-white justify-center items-center"
+            <FaTrash className="m-auto text-white justify-center items-center cursor-pointer"
               onClick={(e) => {
                 onDeleteClicked(note);
                 e.stopPropagation();

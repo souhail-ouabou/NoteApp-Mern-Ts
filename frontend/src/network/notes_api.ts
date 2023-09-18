@@ -1,5 +1,4 @@
 import { ConflictError, UnauthorizedError } from "../errors/http_errors";
-import { Note } from "../models/note";
 import { User } from "../models/user";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
@@ -86,20 +85,20 @@ export interface NoteInput {
 
 
 
-export async function updateNote(noteId: string, note: NoteInput): Promise<Note> {
-    const response = await fetchData("/api/notes/" + noteId,
-        {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(note),
-        });
-    return response.json();
-}
-export async function deleteNote(noteId: string) {
-    await fetchData("/api/notes/" + noteId,
-        {
-            method: "DELETE",
-        });
-}
+// export async function updateNote(noteId: string, note: NoteInput): Promise<Note> {
+//     const response = await fetchData("/api/notes/" + noteId,
+//         {
+//             method: "PATCH",
+//             headers: {
+//                 "Content-Type": "application/json",
+//             },
+//             body: JSON.stringify(note),
+//         });
+//     return response.json();
+// }
+// export async function deleteNote(noteId: string) {
+//     await fetchData("/api/notes/" + noteId,
+//         {
+//             method: "DELETE",
+//         });
+// }

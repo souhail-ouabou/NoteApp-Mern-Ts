@@ -1,14 +1,8 @@
 import { useForm } from "react-hook-form";
-import { NoteInput } from "../network/notes_api";
-import * as NotesApi from "../network/notes_api";
 import { Note } from "../models/note";
+import { NoteInput } from "../network/notes_api";
+import { useSaveNoteMutation, useUpdateNoteMutation } from "../services/notesApi";
 import TextInputField from "./form/TextInputField";
-import { useDispatch } from "react-redux";
-import { useNavigate } from 'react-router-dom'
-import { AppDispatch, RootState } from "../store";
-import { createNote } from "../features/note/noteSlice";
-import { useAppDispatch, useAppSelector } from "../utils/hooks";
-import { useNotesQuery, useSaveNoteMutation } from "../services/notesApi";
 
 interface AddEditNoteDialogProps {
     noteToEdit?: Note,
@@ -17,11 +11,8 @@ interface AddEditNoteDialogProps {
     onNoteSaved: (note: Note) => void
 }
 const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: AddEditNoteDialogProps) => {
-    const { refetch } = useNotesQuery();
-    // const navigate = useNavigate()
-    // const dispatch = useAppDispatch();
-    // const selectedNotes = useAppSelector((state: RootState) => state.noteReducer)
     const [saveNote] = useSaveNoteMutation()
+    const [updateNote] = useUpdateNoteMutation()
     const {
         register,
         handleSubmit,
@@ -34,16 +25,12 @@ const AddEditNoteDialog = ({ noteToEdit, onDismiss, showModal, onNoteSaved }: Ad
     });
     async function onSubmit(input: NoteInput) {
         try {
-            let noteResponse: Note;
             if (noteToEdit) {
-                noteResponse = await NotesApi.updateNote(noteToEdit._id, input);
+                await updateNote({ note: input, id: noteToEdit._id })
             }
             else {
-                // noteResponse = await NotesApi.createNote(input)
                 await saveNote(input)
-                refetch()
             }
-
             onDismiss()
         } catch (error) {
             console.error(error);

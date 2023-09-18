@@ -1,22 +1,19 @@
+import { useState } from 'react';
 import { FaPlusCircle } from "react-icons/fa";
-import AddEditNoteDialog from "./AddEditNoteDialog";
-import React, { useEffect, useState } from 'react';
 import { Note as NoteModel } from '../models/note';
+import AddEditNoteDialog from "./AddEditNoteDialog";
 import Note from "./Note";
-import * as NotesApi from "../network/notes_api"
 
-import { useNoteQuery, useNotesQuery } from "../services/notesApi";
+import { useDeleteNoteMutation, useNotesQuery } from "../services/notesApi";
 
 const NotesPagesLoggedInView = () => {
     const { data, error, isLoading, isFetching, isSuccess } = useNotesQuery()
-    const { data: dataNote, } = useNoteQuery("643059c37e50b2020256b26b")
 
-    console.log("test data" + dataNote);
+    // const { data: dataNote, } = useNoteQuery("643059c37e50b2020256b26b")
+    // console.log("test data" + dataNote);
 
-    const [notes, setNotes] = useState<NoteModel[]>([]);
-    const [notesLoading, setNotesLoading] = useState(false);
-    const [showNotesLoadingError, setShowNotesLoadingError] = useState(false);
 
+    const [deleteNote] = useDeleteNoteMutation()
 
     const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
     const [showEditNoteDialog, setShowEditNoteDialog] = useState(false);
@@ -29,16 +26,15 @@ const NotesPagesLoggedInView = () => {
                     note={note}
                     key={note._id}
                     onNoteClicked={setNoteToEdit} // or   onNoteClicked={(note) => setNoteToEdit(note)}
-                    onDeleteClicked={deleteNote} />)
+                    onDeleteClicked={deleteNoteHandler} />)
             )}
         </div>
     </div>
 
 
-    async function deleteNote(note: NoteModel) {
+    async function deleteNoteHandler(note: NoteModel) {
         try {
-            await NotesApi.deleteNote(note._id);
-            setNotes(notes.filter(existingNote => existingNote._id !== note._id));
+            await deleteNote(note._id);
         } catch (error) {
             console.error(error);
             alert(error)
@@ -53,7 +49,7 @@ const NotesPagesLoggedInView = () => {
                     type="button"
                     onClick={() => setShowEditNoteDialog(true)}
                 >
-                    <FaPlusCircle className="mr-2 text-white justify-center items-center" />
+                    <FaPlusCircle className="mr-2 text-white justify-center items-center cursor-pointer" />
                     Add note
                 </button>
             </div>
