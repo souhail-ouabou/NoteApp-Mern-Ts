@@ -10,8 +10,8 @@ export const notesApi = createApi({
         baseUrl: "/"
     }),
     endpoints: (builder) => ({
-        notes: builder.query<Note[], void>({
-            query: () => '/api/notes',
+        notes: builder.query<Note[], string>({
+            query: (keyword = '') => `/api/notes?keyword=${keyword}`,
             providesTags: ['Note']
         }),
         note: builder.query<Note, string>({

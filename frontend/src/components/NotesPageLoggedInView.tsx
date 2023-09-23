@@ -3,16 +3,21 @@ import { FaPlusCircle } from "react-icons/fa";
 import { Note as NoteModel } from '../models/note';
 import AddEditNoteDialog from "./AddEditNoteDialog";
 import Note from "./Note";
-
+import { ReactComponent as MySVG } from '../assets/searchIcon.svg'
 import { useDeleteNoteMutation, useNotesQuery } from "../services/notesApi";
 
 const NotesPagesLoggedInView = () => {
-    const { data, error, isLoading, isFetching, isSuccess } = useNotesQuery()
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const { data, error, isLoading, isFetching, isSuccess } = useNotesQuery(searchTerm)
 
     // const { data: dataNote, } = useNoteQuery("643059c37e50b2020256b26b")
     // console.log("test data" + dataNote);
 
-
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newSearchTerm = event.target.value;
+        setSearchTerm(newSearchTerm);
+    };
     const [deleteNote] = useDeleteNoteMutation()
 
     const [noteToEdit, setNoteToEdit] = useState<NoteModel | null>(null);
@@ -43,16 +48,26 @@ const NotesPagesLoggedInView = () => {
     return (
 
         <>
-            <div className="flex mt-12 items-center justify-center h-28">
-                <button
-                    className="flex items-center px-6 py-3 text-purple-100 bg-purple-600 rounded-md font-medium"
-                    type="button"
-                    onClick={() => setShowEditNoteDialog(true)}
-                >
-                    <FaPlusCircle className="mr-2 text-white justify-center items-center cursor-pointer" />
-                    Add note
-                </button>
-            </div>
+            <div className="flex mt-20 items-center justify-center h-28">
+                <div className="flex flex-col items-center">
+                    <div className="flex w-full ">
+                        <input className='py-2 px-3 bg-[#1F2937] text-sky-100 focus:outline-none text-base font-semibold rounded-lg block w-full p-2.5 '
+                            placeholder='Search'
+                            onChange={handleInputChange}
+                        />
+                        <button className="px-4 text-white bg-purple-600 rounded-full ">
+                            <MySVG />
+                        </button>
+                    </div>
+                    <button
+                        className="flex items-center mt-3 py-3 px-4 text-white bg-purple-600 rounded-full"
+                        type="button"
+                        onClick={() => setShowEditNoteDialog(true)}
+                    >
+                        <FaPlusCircle className=" text-white justify-center items-center cursor-pointer" />
+                    </button>
+                </div>
+            </div >
             {showEditNoteDialog &&
                 <AddEditNoteDialog
                     onDismiss={() => setShowEditNoteDialog(false)}
@@ -61,37 +76,28 @@ const NotesPagesLoggedInView = () => {
                         setShowEditNoteDialog(false)
                     }} />
             }
-            {isLoading &&
-                <div className="mx-auto container py-2 px-6  animate-pulse">
-                    <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
-                    <span className="sr-only">Loading...</span>
-                </div>
-            }
-            {isFetching &&
-                <div className="mx-auto container py-2 px-6  animate-pulse">
-                    <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
-                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
-                    <span className="sr-only">Fetching...</span>
-                </div>
+            {
+                (isLoading || isFetching) ? (
+                    <div className="mx-auto container py-2 px-6  animate-pulse">
+                        <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+                        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                        <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                        <span className="sr-only">Loading...</span>
+                    </div>) : (
+                    isSuccess &&
+                    <>
+                        {data.length > 0
+                            ? notesGrid : <p>You don't have any notes yet</p>
+                        }
+                    </>
+                )
             }
             {error && <p>Something went wrong. Please refresh the page</p>}
-            {isSuccess &&
-                <>
-                    {data.length > 0
-                        ? notesGrid : <p>You don't have any notes yet</p>
-                    }
-                </>
-            }
-            {noteToEdit &&
+            {
+                noteToEdit &&
                 <AddEditNoteDialog
                     onDismiss={() => setNoteToEdit(null)}
                     showModal={true}

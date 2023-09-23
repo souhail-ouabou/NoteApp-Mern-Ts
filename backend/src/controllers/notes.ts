@@ -8,8 +8,16 @@ export const getNotes: RequestHandler = async (req, res, next) => {
     const authenticatedUserId = req.session.userId; //possible  undifined for that we create the function assertIsDefined.ts
     try {
         assertIsDefined(authenticatedUserId);
+        const keyword = req.query.keyword ? {
+/* The code `title: { : req.query.keyword, : 'i' }` is creating a regular expression
+pattern to search for notes with a title that matches the keyword provided in the query parameter. */
+            title: {
+                $regex: req.query.keyword,
+                $options: 'i'
+            }
+        } : {}
         // throw Error("Biiziga!")
-        const notes = await NoteModel.find({ userId: authenticatedUserId }).exec()
+        const notes = await NoteModel.find({ ...keyword, userId: authenticatedUserId }).exec()
         res.status(200).json(notes)
     } catch (error) {
         next(error)
