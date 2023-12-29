@@ -1,4 +1,4 @@
-import { Avatar, Button, Dropdown } from "flowbite-react";
+import { Avatar, Dropdown } from "flowbite-react";
 import { User } from "../models/user";
 import * as NotesApi from "../network/notes_api";
 

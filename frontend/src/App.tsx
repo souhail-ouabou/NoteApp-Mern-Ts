@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LoginModal from './components/LoginModal';
 import NavBar from './components/NavBar';
 import SignUpModal from './components/SignUpModal';
 import { User } from './models/user';
 import * as NotesApi from "./network/notes_api";
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import NotFoundPage from './pages/NotFoundPage';
 import NotesPage from './pages/NotesPage';
 import PrivacyPage from './pages/PrivacyPage';
-import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null)

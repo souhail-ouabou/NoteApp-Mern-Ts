@@ -1,12 +1,12 @@
+import { Alert } from 'flowbite-react';
 import { useState } from 'react';
 import { useForm } from "react-hook-form";
+import { HiInformationCircle } from 'react-icons/hi';
+import { ConflictError } from '../errors/http_errors';
 import { User } from "../models/user";
 import * as NotesApi from "../network/notes_api";
 import { SignUpCredentials } from "../network/notes_api";
 import TextInputField from "./form/TextInputField";
-import { ConflictError } from '../errors/http_errors';
-import { Alert } from 'flowbite-react';
-import { HiInformationCircle } from 'react-icons/hi';
 
 interface SignUpModalProps {
     onDismiss: () => void,

@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { Note } from "../models/note";
 import { NoteInput } from "../network/notes_api";
-import { useSaveNoteMutation, useUpdateNoteMutation } from "../services/notesApi";
+import { useSaveNoteMutation, useUpdateNoteMutation } from "../services/notes";
 import TextInputField from "./form/TextInputField";
 
 interface AddEditNoteDialogProps {

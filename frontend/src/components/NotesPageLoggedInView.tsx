@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { FaPlusCircle } from "react-icons/fa";
+import { ReactComponent as MySVG } from '../assets/searchIcon.svg';
 import { Note as NoteModel } from '../models/note';
+import { useDeleteNoteMutation, useNotesQuery } from "../services/notes";
 import AddEditNoteDialog from "./AddEditNoteDialog";
 import Note from "./Note";
-import { ReactComponent as MySVG } from '../assets/searchIcon.svg'
-import { useDeleteNoteMutation, useNotesQuery } from "../services/notesApi";
+import { useDebounce } from '../hooks/useDebounce';
 
 const NotesPagesLoggedInView = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearch = useDebounce(searchTerm)
 
-    const { data, error, isLoading, isFetching, isSuccess } = useNotesQuery(searchTerm)
+    const { data, error, isLoading, isFetching, isSuccess } = useNotesQuery(debouncedSearch)
 
     // const { data: dataNote, } = useNoteQuery("643059c37e50b2020256b26b")
     // console.log("test data" + dataNote);

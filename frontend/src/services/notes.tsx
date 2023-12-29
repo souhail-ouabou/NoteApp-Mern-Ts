@@ -4,7 +4,7 @@ import { NoteInput } from "../network/notes_api";
 
 
 export const notesApi = createApi({
-    reducerPath: "notesApi",
+    reducerPath: "notes",
     tagTypes: ['Note'],
     baseQuery: fetchBaseQuery({
         baseUrl: "/"
