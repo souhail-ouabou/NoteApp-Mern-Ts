@@ -44,8 +44,8 @@ const Note = ({ note, onNoteClicked, onDeleteClicked }: NoteProps) => {
         <div className="flex items-center justify-between text-gray-800 dark:text-gray-100">
           <p className="text-sm"> {createdUpdatedText}</p>
           <button className="w-8 h-8 rounded-full bg-gray-800 dark:bg-gray-100 dark:text-gray-800 text-white flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2  focus:ring-black">
-            <img className="dark:hidden" src="https://tuk-cdn.s3.amazonaws.com/can-uploader/4-by-3-multiple-styled-cards-svg1.svg" alt="edit" />
-            <img className="dark:block hidden" src="https://tuk-cdn.s3.amazonaws.com/can-uploader/4-by-3-multiple-styled-cards-svg1dark.svg" alt="edit" />
+            <img className="dark:hidden" src="https://cdn-icons-png.flaticon.com/512/5251/5251816.png" alt="edit" />
+            <img className="dark:block hidden" src="https://cdn-icons-png.flaticon.com/512/5251/5251816.png" alt="edit" />
           </button>
         </div>
       </div>

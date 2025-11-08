@@ -47,22 +47,32 @@ export interface LoginCredentials {
 }
 
 export async function login(credentials: LoginCredentials): Promise<User> {
-    const response = await fetchData("/api/users/login",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(credentials),
-        });
-    return response.json();
+  const apiUrl = process.env.REACT_APP_API_URL || "";
+  const response = await fetchData(`${apiUrl}/api/users/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentials),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Login failed: ${response.statusText}`);
+  }
+
+  return response.json();
 }
 
 export async function logout() {
-    await fetchData("/api/users/logout", { method: "POST" });
+  const apiUrl = process.env.REACT_APP_API_URL || "";
+  const response = await fetchData(`${apiUrl}/api/users/logout`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Logout failed: ${response.statusText}`);
+  }
 }
-
-
 
 
 

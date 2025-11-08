@@ -8,6 +8,7 @@ import session from "express-session"
 import env from "./util/validateEnv"
 import MongoStore from "connect-mongo"
 import { requiresAuth } from '../middelware/auth'
+import cors from "cors"
 
 const app = express()
 
@@ -15,18 +16,24 @@ app.use(morgan('dev'))
 app.use(express.json())
 
 
-app.use(session({
-    secret: env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 60 * 60 * 1000,
-    },
-    rolling: true,
-    store: MongoStore.create({
-        mongoUrl: env.MONGO_CONNECTION_STRING
-    })
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  credentials: true, // allow cookies & sessions across origins
+}))
 
+app.use(session({
+  secret: env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 60 * 60 * 1000,
+    sameSite: "lax",      // ⚙️ Important for CORS + cookies
+    secure: false,        // ⚙️ Set to true if using HTTPS in production
+  },
+  rolling: true,
+  store: MongoStore.create({
+    mongoUrl: env.MONGO_CONNECTION_STRING
+  })
 }))
 
 app.use('/api/users', userRoutes)
