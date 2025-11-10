@@ -21,6 +21,8 @@ app.use(cors({
   credentials: true, // allow cookies & sessions across origins
 }))
 
+const isTest = process.env.NODE_ENV === "test";
+
 app.use(session({
   secret: env.SESSION_SECRET,
   resave: false,
@@ -31,9 +33,11 @@ app.use(session({
     secure: false,        // ⚙️ Set to true if using HTTPS in production
   },
   rolling: true,
-  store: MongoStore.create({
-    mongoUrl: env.MONGO_CONNECTION_STRING
-  })
+  store: isTest
+    ? undefined // ✅ Skip MongoStore in tests
+    : MongoStore.create({
+        mongoUrl: env.MONGO_CONNECTION_STRING
+      })
 }))
 
 app.use('/api/users', userRoutes)
