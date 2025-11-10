@@ -22,6 +22,8 @@
   },
   "include": [
     "src",
+    "__tests__",
+    "jest.setup.ts",
     "tailwind.config.js"
   ]
 }
