@@ -24,7 +24,7 @@ build:backend:
     - vps
   image: docker:24-cli
   services:
-    - name: docker:24-dind-rootless
+    - name: docker:24-dind
       command: ["--tls=false"]
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
