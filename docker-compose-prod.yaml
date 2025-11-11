@@ -1,0 +1,44 @@
+version: "3.9"
+
+networks:
+  mern-net:
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    restart: always
+    volumes:
+      - ./mongo_data:/data/db
+    networks:
+      - mern-net
+
+  backend:
+    image: ${CI_REGISTRY_IMAGE}/backend:${CI_COMMIT_REF_SLUG}
+    container_name: backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+    networks:
+      - mern-net
+    # optional: only for first deployment if image not yet in registry
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+  frontend:
+    image: ${CI_REGISTRY_IMAGE}/frontend:${CI_COMMIT_REF_SLUG}
+    container_name: frontend
+    restart: always
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend
+    networks:
+      - mern-net
+    # optional: only for first deployment if image not yet in registry
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
