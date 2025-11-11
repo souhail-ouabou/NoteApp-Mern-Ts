@@ -15,6 +15,11 @@ variables:
   FRONTEND_IMAGE: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_REF_SLUG
   BACKEND_IMAGE: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG
 
+before_script:
+  # Force Git to use IPv4 to avoid DNS issues in containers
+  - export GIT_USE_IPV4=true
+  - git config --global url."https://".insteadOf git://
+
 cache:
   key: ${CI_PROJECT_NAME}
   paths:
