@@ -49,15 +49,16 @@ build:backend:
     name: docker:24-cli
     pull_policy: if-not-present
   services:
-    - name: docker:24-dind-rootless
+    - name: docker:24-dind
       alias: docker
+      command: ["--tls=false"]
       pull_policy: if-not-present
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
   before_script:
-    - sleep 5
-    - docker info || (echo "Docker daemon not ready, checking status..." && sleep 10 && docker info)
+    - until docker info >/dev/null 2>&1; do echo "Waiting for Docker daemon..."; sleep 1; done
+    - echo "Docker daemon is ready"
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
     - docker build -t $BACKEND_IMAGE ./backend
