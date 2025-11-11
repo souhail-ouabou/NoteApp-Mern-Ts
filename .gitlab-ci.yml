@@ -33,6 +33,11 @@ debug:ci-network:
     - vps
   image: alpine:latest
   script:
+  script:
+    - cat /etc/resolv.conf
+    - nslookup gitlab.com || true
+    - ping -c 3 1.1.1.1
+    - ping -c 3 gitlab.com || true
     - apk add --no-cache bind-tools
     - nslookup gitlab.com
     - ping -c 3 172.65.251.78
