@@ -45,20 +45,17 @@ build:backend:
   stage: build
   tags: 
     - vps
-  image: 
-    name: docker:24-cli
-    pull_policy: if-not-present
+  image: docker:24
   services:
     - name: docker:24-dind
       alias: docker
       command: ["--tls=false"]
-      pull_policy: if-not-present
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
   before_script:
-    - until docker info >/dev/null 2>&1; do echo "Waiting for Docker daemon..."; sleep 1; done
-    - echo "Docker daemon is ready"
+    - echo "Waiting for Docker daemon..."
+    - for i in {1..30}; do docker info >/dev/null 2>&1 && break || (echo "Retry $i"; sleep 1); done
+    - echo "Docker daemon is ready ✅"
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
     - docker build -t $BACKEND_IMAGE ./backend
@@ -68,6 +65,7 @@ build:backend:
     - develop
     - merge_requests
     - ci-testing
+
 
 # build:frontend:
 #   stage: build
