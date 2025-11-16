@@ -53,6 +53,8 @@ build:backend:
   variables:
     DOCKER_HOST: tcp://docker:2375
   before_script:
+    - echo "nameserver 1.1.1.1" > /etc/resolv.conf
+    - echo "nameserver 8.8.8.8" >> /etc/resolv.conf
     - echo "Waiting for Docker daemon..."
     - for i in {1..30}; do docker info >/dev/null 2>&1 && break || (echo "Retry $i"; sleep 1); done
     - echo "Docker daemon is ready ✅"
