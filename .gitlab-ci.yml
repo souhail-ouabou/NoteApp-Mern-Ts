@@ -14,10 +14,10 @@ variables:
   FRONTEND_IMAGE: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_REF_SLUG
   BACKEND_IMAGE: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG
 
-before_script:
-  # Force Git to use IPv4 to avoid DNS issues in containers
-  - export GIT_USE_IPV4=true
-  - git config --global url."https://".insteadOf git://
+# before_script:
+#   # Force Git to use IPv4 to avoid DNS issues in containers
+#   - export GIT_USE_IPV4=true
+#   - git config --global url."https://".insteadOf git://
 
 cache:
   key: ${CI_PROJECT_NAME}
@@ -67,64 +67,64 @@ build:backend:
     - ci-testing
 
 
-# build:frontend:
-#   stage: build
-#   tags: 
-#     - vps
-#   image: docker:24-cli
-#   services:
-#     - name: docker:24-dind
-#       alias: docker
-#       command: ["--tls=false"]
-#   variables:
-#     DOCKER_HOST: tcp://docker:2375
-#   before_script:
-#     - until docker info >/dev/null 2>&1; do echo "Waiting for Docker daemon..."; sleep 1; done
-#     - echo "Docker daemon is ready"
-#   script:
-#     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
-#     - docker build -t $FRONTEND_IMAGE ./frontend
-#     - docker push $FRONTEND_IMAGE
-#   only:
-#     - main
-#     - develop
-#     - merge_requests
-#     - ci-testing
+build:frontend:
+  stage: build
+  tags: 
+    - vps
+  image: docker:24-cli
+  services:
+    - name: docker:24-dind
+      alias: docker
+      command: ["--tls=false"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - until docker info >/dev/null 2>&1; do echo "Waiting for Docker daemon..."; sleep 1; done
+    - echo "Docker daemon is ready"
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker build -t $FRONTEND_IMAGE ./frontend
+    - docker push $FRONTEND_IMAGE
+  only:
+    - main
+    - develop
+    - merge_requests
+    - ci-testing
 
 # ==================== TEST STAGE ====================
-# test:backend:
-#   stage: test
-#   tags: 
-#     - vps
-#   image: node:18-alpine
-#   before_script:
-#     - cd backend
-#     - npm ci --cache .npm --prefer-offline
-#   script:
-#     - npm run test --if-present
-#     - npm run lint --if-present
-#   only:
-#     - main
-#     - develop
-#     - merge_requests
-#     - ci-testing
+test:backend:
+  stage: test
+  tags: 
+    - vps
+  image: node:18-alpine
+  before_script:
+    - cd backend
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm run test --if-present
+    - npm run lint --if-present
+  only:
+    - main
+    - develop
+    - merge_requests
+    - ci-testing
 
-# test:frontend:
-#   stage: test
-#   tags: 
-#     - vps
-#   image: node:18-alpine
-#   before_script:
-#     - cd frontend
-#     - npm ci --cache .npm --prefer-offline
-#   script:
-#     - npm run test --if-present
-#     - npm run lint --if-present
-#   only:
-#     - main
-#     - develop
-#     - merge_requests
-#     - ci-testing
+test:frontend:
+  stage: test
+  tags: 
+    - vps
+  image: node:18-alpine
+  before_script:
+    - cd frontend
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm run test --if-present
+    - npm run lint --if-present
+  only:
+    - main
+    - develop
+    - merge_requests
+    - ci-testing
     
 # ==================== DEPLOY STAGE ====================
 # deploy:staging:
