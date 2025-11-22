@@ -153,6 +153,9 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
+!.env.test
+!.env.example
+
 # Editor/IDE specific files
 .vscode/
 .idea/

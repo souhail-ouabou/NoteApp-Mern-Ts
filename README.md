@@ -83,3 +83,12 @@ If you have any feedback, please reach out to us at souhail7ouabou@gmail.com
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
+
+
+
+
+
+
+✅ Tests : Utilise .env.test (rapide, pas de secrets réels)
+✅ Production : Utilise GitLab CI/CD Variables (sécurisé)
+✅ Local dev : Chaque dev a son propre .env (non committé)
