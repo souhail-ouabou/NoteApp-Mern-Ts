@@ -43,8 +43,8 @@ cache:
 # ==================== BUILD STAGE ====================
 build:backend:
   stage: build
-  tags: 
-    - vps
+  # tags: 
+  #   - vps
   image: docker:24
   services:
     - name: docker:24-dind
@@ -69,8 +69,8 @@ build:backend:
 
 build:frontend:
   stage: build
-  tags: 
-    - vps
+  # tags: 
+  #   - vps
   image: docker:24-cli
   services:
     - name: docker:24-dind
@@ -94,14 +94,14 @@ build:frontend:
 # ==================== TEST STAGE ====================
 test:backend:
   stage: test
-  tags: 
-    - vps
+  # tags: 
+  #   - vps
   image: node:18-alpine
   variables:
     NODE_ENV: "test"
   before_script:
     - cd backend
-    - cp .env.test .env  # Copie les variables de tes
+    - cp .env.test .env
     - npm ci --cache .npm --prefer-offline
   script:
     - npm run test --if-present
